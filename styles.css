@@ -5,11 +5,20 @@ body {
         height: 100%;
     }
 }
+button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 100px;
+    height: 30px;
+}
 #info {
-	position: absolute;
+	position: fixed;
 	top: 10px;
-	width: 100%;
+	max-width: 350px;
+    margin: 0 auto;
+    left:0;
+    right:0;
 	text-align: center;
-	z-index: 100;
-	display:block;
+	background: rgba(0,0,0,0.1);
 }

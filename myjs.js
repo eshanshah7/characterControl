@@ -33,7 +33,7 @@ function createScene() {
     farPlane = 10000;
 
     camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-    camera.position.set(10,5,10);
+    camera.position.set(12,10,25);
 
     renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
     renderer.setSize(WIDTH,HEIGHT);
@@ -50,9 +50,10 @@ function createScene() {
     window.addEventListener('resize', onWindowResize, false);
 }
 
-var wPressed, aPressed, sPressed, dPressed;
+var wPressed, aPressed, sPressed, dPressed, spacePressed;
 
-var walking;
+var walking, jumping;
+
 function keyDownHandler(e) {
     // console.log(e.keyCode);
     if(e.keyCode == 87) {
@@ -66,6 +67,12 @@ function keyDownHandler(e) {
     }
     if(e.keyCode == 68) {
         dPressed = true;
+    }
+    if(e.keyCode == 32) {
+        spacePressed = true;
+        if(!jumping){
+            jumpAnimation();
+        }        
     }
 }
 
@@ -86,6 +93,11 @@ function keyUpHandler(e) {
     if(e.keyCode == 68) {
         dPressed = false;
         walking = false;
+    }
+    if(e.keyCode == 32) {
+        spacePressed = false;
+        walking = false;
+        // jumping = false;
     }
 }
 
@@ -109,7 +121,7 @@ function createDatGui() {
 
 var charObject, leftLeg, rightLeg, Legs;
 
-var ui = {factor:100,
+var ui = {walkFactor:100,
         walkSpeed:1};
 
 function createBlob() {
@@ -164,7 +176,7 @@ function createBlob() {
 	f2.add(leftLeg.rotation, 'y',-180*Math.PI/180,180*Math.PI/180);
 	f2.add(leftLeg.rotation, 'z',-180*Math.PI/180,180*Math.PI/180);
 
-    gui.add(ui,'factor',50,1000);
+    gui.add(ui,'walkFactor',50,1000);
     gui.add(ui,'walkSpeed',1,5);
 
 
@@ -198,13 +210,30 @@ function onWindowResize() {
 }
 
 function startWalking() {
-    rightLeg.rotation.x = Math.cos((Date.now()/ui.factor) + 90*Math.PI/180);
-    leftLeg.rotation.x = Math.sin(Date.now()/ui.factor);
+    rightLeg.rotation.x = Math.cos((Date.now()/ui.walkFactor) + 90*Math.PI/180);
+    leftLeg.rotation.x = Math.sin(Date.now()/ui.walkFactor);
 }
 
 function stopWalking() {
     rightLeg.rotation.x = 0;
     leftLeg.rotation.x = 0;
+}
+
+function jumpAnimation() {
+    if(!jumping) {
+        jumping = true;
+    }
+    if(jumping) {
+        var tl = new TimelineMax();
+        tl.to(charObject.position,0.4,{y:4, ease: Power1.easeOut})
+          .to(charObject.position,0.4,{y:0, ease: Power1.easeIn})
+          .call(stopJump)
+          .play();
+    }
+}
+
+function stopJump() {
+    jumping = false;
 }
 
 function loop(){
@@ -230,6 +259,7 @@ function loop(){
     } else {
         stopWalking();
     }
+
     controls.update();
     renderer.render(scene, camera);
 
