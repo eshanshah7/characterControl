@@ -72,7 +72,7 @@ function keyDownHandler(e) {
         spacePressed = true;
         if(!jumping){
             jumpAnimation();
-        }        
+        }
     }
 }
 
@@ -113,7 +113,7 @@ function createHelpers() {
 }
 
 function createDatGui() {
-    var f1 = gui.addFolder('Position');
+    var f1 = gui.addFolder('Camera Position');
 	f1.add(camera.position, 'x',-50,50).listen();
 	f1.add(camera.position, 'y',-50,50).listen();
 	f1.add(camera.position, 'z',-50,50).listen();
@@ -121,8 +121,11 @@ function createDatGui() {
 
 var charObject, leftLeg, rightLeg, Legs;
 
-var ui = {walkFactor:100,
-        walkSpeed:1};
+var ui = {
+        walkFactor:100,
+        walkSpeed:1,
+        turnSpeed:3
+    };
 
 function createBlob() {
     charObject = new THREE.Object3D();
@@ -176,8 +179,11 @@ function createBlob() {
 	f2.add(leftLeg.rotation, 'y',-180*Math.PI/180,180*Math.PI/180);
 	f2.add(leftLeg.rotation, 'z',-180*Math.PI/180,180*Math.PI/180);
 
-    gui.add(ui,'walkFactor',50,1000);
-    gui.add(ui,'walkSpeed',1,5);
+    var f3 = gui.addFolder('Character Properties');
+    f3.add(ui,'walkFactor',50,1000);
+    f3.add(ui,'walkSpeed',1,5);
+    f3.add(ui,'turnSpeed',1,5);
+    f3.open();
 
 
     var torsoGeometry = new THREE.BoxGeometry(3,3,3);
@@ -244,10 +250,10 @@ function loop(){
         charObject.translateZ(ui.walkSpeed*-0.1);
     }
     if(aPressed) {
-        charObject.rotateY(3*Math.PI/180);
+        charObject.rotateY(ui.turnSpeed*Math.PI/180);
     }
     if(dPressed) {
-        charObject.rotateY(-3*Math.PI/180);
+        charObject.rotateY(-ui.turnSpeed*Math.PI/180);
     }
 
     if(wPressed || sPressed || aPressed || dPressed) {
